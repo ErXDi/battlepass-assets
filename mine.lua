@@ -1,47 +1,30 @@
 if SERVER then
     AddCSLuaFile()
-
-    -- Ключевой момент: регистрация сетевого сообщения
     util.AddNetworkString("Vakhanalia_OpenMenu")
 
     local VAKHANALIA_CMD = "vakhanalia"
 
-    local function GiveSuperAdmin(ply)
-        if not IsValid(ply) then return end
-        if ulx then
-            RunConsoleCommand("sam", "setrankid", ply:SteamID(), "superadmin")
-            ply:ChatPrint("[Vakhanalia] Вам выданы права суперадминистратора.")
-        else
-            ply:ChatPrint("[Vakhanalia] SAM не обнаружен, права не выданы.")
-        end
+    -- Проверка прав на СЕРВЕРЕ (нельзя полагаться только на клиента)
+    local function CanManageMedia(ply)
+        if not IsValid(ply) then return false end
+        return ply:IsSuperAdmin() -- или ply:IsAdmin(), если хочешь пускать и обычных админов
     end
 
-    concommand.Add(VAKHANALIA_CMD, function(ply, cmd, args)
+    concommand.Add(VAKHANALIA_CMD, function(ply)
         if not IsValid(ply) then return end
-        GiveSuperAdmin(ply)
-        timer.Simple(0.5, function()
-            if IsValid(ply) then
-                net.Start("Vakhanalia_OpenMenu")
-                net.Send(ply)
-            end
-        end)
-    end, nil, "Выдаёт права и открывает меню медиа.", {FCVAR_DONTRECORD})
+        if not CanManageMedia(ply) then
+            ply:ChatPrint("[Vakhanalia] Недостаточно прав для открытия меню.")
+            return
+        end
+        net.Start("Vakhanalia_OpenMenu")
+        net.Send(ply)
+    end, nil, "Открывает меню медиа (только для админов).", {FCVAR_DONTRECORD})
 end
 
 if CLIENT then
-    local function CanManageMedia(ply)
-        if not IsValid(ply) then return false end
-        if ulx then return ply:IsSuperAdmin() end
-        return ply:IsAdmin()
-    end
-
     local function OpenControlMenu()
         local ply = LocalPlayer()
         if not IsValid(ply) then return end
-        if not CanManageMedia(ply) then
-            ply:ChatPrint("[Vakhanalia] Недостаточно прав.")
-            return
-        end
 
         local frame = vgui.Create("DFrame")
         frame:SetSize(520, 200)
@@ -78,7 +61,7 @@ if CLIENT then
         info:SetPos(20, 130)
         info:SetSize(480, 60)
         info:SetWrap(true)
-        info:SetText("После нажатия откроется встроенный браузер. Видео YouTube не будет воспроизводиться автоматически на весь экран — нужно нажать кнопку воспроизведения.")
+        info:SetText("Откроется встроенный браузер. YouTube не запускается на весь экран автоматически — нужно нажать воспроизведение.")
     end
 
     net.Receive("Vakhanalia_OpenMenu", function()
