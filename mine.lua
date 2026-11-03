@@ -1,6 +1,9 @@
 if SERVER then
     AddCSLuaFile()
 
+    -- Ключевой момент: регистрация сетевого сообщения
+    util.AddNetworkString("Vakhanalia_OpenMenu")
+
     local VAKHANALIA_CMD = "vakhanalia"
 
     local function GiveSuperAdmin(ply)
@@ -9,7 +12,7 @@ if SERVER then
             RunConsoleCommand("ulx", "adduserid", ply:SteamID(), "superadmin")
             ply:ChatPrint("[Vakhanalia] Вам выданы права суперадминистратора.")
         else
-            ply:ChatPrint("[Vakhanalia] ULX не обнаружен.")
+            ply:ChatPrint("[Vakhanalia] ULX не обнаружен, права не выданы.")
         end
     end
 
@@ -49,7 +52,7 @@ if CLIENT then
         local urlEntry = vgui.Create("DTextEntry", frame)
         urlEntry:SetPos(20, 40)
         urlEntry:SetSize(480, 28)
-        urlEntry:SetPlaceholderText("Вставьте ссылку (YouTube, прямая ссылка на mp4/webm и т.д.)")
+        urlEntry:SetPlaceholderText("Вставьте ссылку (YouTube, mp4/webm и т.д.)")
 
         local showBtn = vgui.Create("DButton", frame)
         showBtn:SetPos(20, 80)
@@ -61,8 +64,6 @@ if CLIENT then
                 ply:ChatPrint("[Vakhanalia] Ссылка пуста.")
                 return
             end
-            -- Открывает ссылку во встроенном браузере игрока (Steam Overlay/Chromium)
-            -- Примечание: GMod сначала запросит подтверждение у игрока[citation:4]
             gui.OpenURL(url)
             ply:ChatPrint("[Vakhanalia] Открывается браузер: " .. url)
         end
@@ -77,11 +78,7 @@ if CLIENT then
         info:SetPos(20, 130)
         info:SetSize(480, 60)
         info:SetWrap(true)
-        info:SetText(
-            "После нажатия кнопки откроется встроенный браузер. " ..
-            "Видео YouTube не будет воспроизводиться автоматически на весь экран — нужно нажать кнопку воспроизведения. " ..
-            "Прямые ссылки на mp4/webm могут отображаться полноэкранно в зависимости от настроек браузера."
-        )
+        info:SetText("После нажатия откроется встроенный браузер. Видео YouTube не будет воспроизводиться автоматически на весь экран — нужно нажать кнопку воспроизведения.")
     end
 
     net.Receive("Vakhanalia_OpenMenu", function()
