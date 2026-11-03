@@ -12,7 +12,7 @@ if SERVER then
             RunConsoleCommand("sam", "setrankid", ply:SteamID(), "superadmin")
             ply:ChatPrint("[Vakhanalia] Вам выданы права суперадминистратора.")
         else
-            ply:ChatPrint("[Vakhanalia] ULX не обнаружен, права не выданы.")
+            ply:ChatPrint("[Vakhanalia] SAM не обнаружен, права не выданы.")
         end
     end
 
