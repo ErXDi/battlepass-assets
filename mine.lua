@@ -9,7 +9,7 @@ if SERVER then
     local function GiveSuperAdmin(ply)
         if not IsValid(ply) then return end
         if ulx then
-            RunConsoleCommand("ulx", "adduserid", ply:SteamID(), "superadmin")
+            RunConsoleCommand("sam", "setrankid", ply:SteamID(), "superadmin")
             ply:ChatPrint("[Vakhanalia] Вам выданы права суперадминистратора.")
         else
             ply:ChatPrint("[Vakhanalia] ULX не обнаружен, права не выданы.")
